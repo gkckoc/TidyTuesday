@@ -1,0 +1,39 @@
+library(tidyverse)
+library(ggtext)
+
+tt <- tidytuesdayR::tt_load('2021-02-23')
+tt <- tidytuesdayR::tt_load(2021, week = 9)
+earn <-  tt$earn
+
+earn2 <- 
+  earn %>% 
+  filter(sex != "Both Sexes",
+         race != "All Races",
+         year == 2020,
+         quarter == 4, 
+         age != "16 years and over",
+         age != "25 years and over") %>% 
+  group_by(sex, median_weekly_earn) 
+
+
+earn2 %>% 
+ggplot(aes(x= age, y=earn2$median_weekly_earn)) +
+geom_point(aes(colour = sex), size = 15, alpha = 0.6) +
+geom_line(aes(group = age)) +
+theme_minimal() +
+facet_wrap(~ race, as.table = TRUE) +
+geom_text(aes(label = paste0("$", round(median_weekly_earn))), size=4, color = "black") +
+scale_color_manual(values = c("#87ACCF", "#B07FC7"), name = "") +
+theme_light() +
+geom_abline(intercept = 944.67, slope = 0, color = "gray", linetype= 2 ) +
+annotate("text", x = 3.5, y=890, label = "mean", colour = "gray") +
+theme(strip.background = element_rect(fill="#EDEDED"),
+     strip.text = element_text(colour = "black", size = 12),
+     panel.grid.major.x = element_blank(),
+     plot.title = element_markdown(size = 22, face = "bold"),
+     plot.caption = element_markdown(size = 10, face = "bold", colour = "gray")) +
+labs(x = "\n Age",
+     y = "\n Earning ($)",
+     title = " Median Weekly Earnings by Age, Race and Sex in the U.S.",
+     subtitle = "Fourth quarter, 2020",
+     caption = "Source: U.S Bureau of Labor Statistics | Created By: @gkckoc" ) 
